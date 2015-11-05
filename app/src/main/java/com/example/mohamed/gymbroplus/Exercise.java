@@ -2,6 +2,7 @@ package com.example.mohamed.gymbroplus;
 
 /**
  * Created by Mohamed on 5-11-2015.
+ * Exercise
  */
 public class Exercise {
     private int _id,_day,_set,_reps,_weight;

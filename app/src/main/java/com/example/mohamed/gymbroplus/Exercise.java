@@ -5,31 +5,23 @@ package com.example.mohamed.gymbroplus;
  * Exercise
  */
 public class Exercise {
-    private int _id,_day,_set,_reps,_weight;
-    private String _exercisename,_clientname;
+    private int _exerciseid,_exerciseset,_exercisereps;
+    private String _exercisename;
 
-    public Exercise(int id, String exercisename, String clientname, int day, int set, int reps, int weight){
-        _id = id;
+    public Exercise(int id,String exercisename, int set, int reps){
+        _exerciseid = id;
         _exercisename = exercisename;
-        _clientname = clientname;
-        _day =  day;
-        _set = set;
-        _reps = reps;
-        _weight = weight;
+        _exerciseset = set;
+        _exercisereps = reps;
     }
 
-    public int getId(){return _id;}
+    public int getId(){return _exerciseid;}
 
     public String getExercisename(){return _exercisename;}
 
-    public String getClientname(){return _clientname;}
+    public int getSet(){return _exerciseset;}
 
-    public int getDay(){return _day;}
+    public int getReps(){return _exercisereps;}
 
-    public int getSet(){return _set;}
-
-    public int getReps(){return _reps;}
-
-    public int getWeight(){return _weight;}
 
 }

@@ -71,12 +71,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(exerciseName, exercise.getExercisename());
-        values.put(exerciseClientName, exercise.getClientname());
-        values.put(exerciseDay, exercise.getDay());
         values.put(exerciseSet, exercise.getSet());
         values.put(exerciseReps, exercise.getReps());
-        values.put(exerciseWeight, exercise.getWeight());
-
         db.insert(tableName, null, values);
         db.close();
     }
@@ -89,11 +85,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[]{
                         exerciseId,
                         exerciseName,
-                        exerciseClientName,
-                        exerciseDay,
                         exerciseSet,
-                        exerciseReps,
-                        exerciseWeight
+                        exerciseReps
                 },
                 exerciseId + "=?",
                 new String[]{String.valueOf(id)},
@@ -105,12 +98,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Exercise exercise = new Exercise(
                 Integer.parseInt(cursor.getString(0)),
                 cursor.getString(1),
-                cursor.getString(2),
-                Integer.parseInt(cursor.getString(3)),
-                Integer.parseInt(cursor.getString(4)),
-                Integer.parseInt(cursor.getString(5)),
-                Integer.parseInt(cursor.getString(6))
-        );
+                Integer.parseInt(cursor.getString(2)),
+                Integer.parseInt(cursor.getString(3))
+                );
         db.close();
         cursor.close();
         return exercise;
@@ -141,11 +131,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(exerciseName, exercise.getExercisename());
-        values.put(exerciseClientName, exercise.getClientname());
-        values.put(exerciseDay, exercise.getDay());
         values.put(exerciseSet, exercise.getSet());
         values.put(exerciseReps, exercise.getReps());
-        values.put(exerciseWeight, exercise.getWeight());
 
         return db.update(tableName, values, exerciseId + "=?", new String[]{String.valueOf(exercise.getId())});
     }
@@ -162,11 +149,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 Exercise exercise = new Exercise(
                         Integer.parseInt(cursor.getString(0)),
                         cursor.getString(1),
-                        cursor.getString(2),
-                        Integer.parseInt(cursor.getString(3)),
-                        Integer.parseInt(cursor.getString(4)),
-                        Integer.parseInt(cursor.getString(5)),
-                        Integer.parseInt(cursor.getString(6))
+                        Integer.parseInt(cursor.getString(2)),
+                        Integer.parseInt(cursor.getString(3))
                 );
                 exercises.add(exercise);
             }

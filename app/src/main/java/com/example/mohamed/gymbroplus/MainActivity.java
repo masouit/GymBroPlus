@@ -1,5 +1,6 @@
 package com.example.mohamed.gymbroplus;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.ButtonBarLayout;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+/*
         exercisenameTxt = (TextView) findViewById(R.id.textViewExercise);
         clientnameTxt = (TextView) findViewById(R.id.textViewClientName);
         dayTxt = (TextView) findViewById(R.id.textViewDay);
@@ -35,25 +36,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Data has been saved",Toast.LENGTH_SHORT).show();
             }
         });
-
-        TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
-        tabHost.setup();
-
-        TabHost.TabSpec tabSpec = tabHost.newTabSpec("Tab1");
-        tabSpec.setContent(R.id.tab1);
-        tabSpec.setIndicator("Flat Barbell Bench Press");
-        tabHost.addTab(tabSpec);
-
-        tabSpec = tabHost.newTabSpec("Tab2");
-        tabSpec.setContent(R.id.tab2);
-        tabSpec.setIndicator("Tab 2");
-        tabHost.addTab(tabSpec);
-
-        tabSpec = tabHost.newTabSpec("Tab3");
-        tabSpec.setContent(R.id.tab3);
-        tabSpec.setIndicator("Tab 3");
-        tabHost.addTab(tabSpec);
-
+        */
         dbHandler = new DatabaseHandler(getApplicationContext());
+
+
+    }
+    /** Called when the user clicks the Send button */
+    public void sendMessage(View view) {
+        Intent intent = new Intent(this, Add_Exercise.class);
+        startActivity(intent);
     }
 }

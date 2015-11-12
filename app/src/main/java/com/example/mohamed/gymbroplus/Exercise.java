@@ -5,23 +5,37 @@ package com.example.mohamed.gymbroplus;
  * Exercise
  */
 public class Exercise {
-    private int _exerciseid,_exerciseset,_exercisereps;
+    private int _exerciseid;
     private String _exercisename;
 
-    public Exercise(int id,String exercisename, int set, int reps){
-        _exerciseid = id;
-        _exercisename = exercisename;
-        _exerciseset = set;
-        _exercisereps = reps;
+    // constructors
+    public Exercise() {
     }
 
-    public int getId(){return _exerciseid;}
+    public Exercise(String exercisename){
+        _exercisename = exercisename;
+    }
 
-    public String getExercisename(){return _exercisename;}
+    public Exercise(int id,String exercisename){
+        _exerciseid = id;
+        _exercisename = exercisename;
+    }
 
-    public int getSet(){return _exerciseset;}
+    // setters
+    public void setExerciseId(int id) {
+        _exerciseid = id;
+    }
 
-    public int getReps(){return _exercisereps;}
+    public void setExerciseName(String exercisename) {
+        _exercisename = exercisename;
+    }
 
+    // getters
+    public long getExerciseId() {
+        return _exerciseid;
+    }
 
+    public String getExerciseName() {
+        return _exercisename;
+    }
 }

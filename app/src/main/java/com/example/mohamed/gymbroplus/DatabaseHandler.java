@@ -220,7 +220,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //Get All Reps from Exercise
     public List<Rep> getAllRepsByExercise(String exercise_name) {
-        List<Rep> tasks = new ArrayList<Rep>();
+        List<Rep> reps = new ArrayList<Rep>();
 
         String selectQuery = "SELECT  * FROM " + TABLE_Rep + " td, "
                 + TABLE_Exercise + " tg, " + TABLE_Exercise_Rep + " tt WHERE tg."
@@ -239,11 +239,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 td.setRepAmount((c.getInt(c.getColumnIndex(KEY_repAmount))));
 
                 // adding to task list
-                tasks.add(td);
+                reps.add(td);
             } while (c.moveToNext());
         }
 
-        return tasks;
+        return reps;
     }
 
     //Update Rep

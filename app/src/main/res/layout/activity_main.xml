@@ -26,5 +26,13 @@
         android:text="Add Exercise"
         android:id="@+id/buttonAddExercise"
         android:layout_gravity="center_horizontal"
-        android:onClick="sendMessage" />
+        android:onClick="menuAdd_Exercise" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Show Exercises"
+        android:id="@+id/buttonShowExercises"
+        android:layout_gravity="center_horizontal"
+        android:onClick="menuShow_Exercises" />
 </LinearLayout>

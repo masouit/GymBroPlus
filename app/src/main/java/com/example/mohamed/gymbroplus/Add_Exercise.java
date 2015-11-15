@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,10 @@ public class Add_Exercise extends AppCompatActivity {
             edittextreps = ((EditText) findViewById(repid));
             Toast.makeText(getApplicationContext(), "added edittext "+String.valueOf(repid), Toast.LENGTH_SHORT).show();
             // Inserting reps in db
-            Rep rep = new Rep(Integer.parseInt(edittextreps.getText().toString()));
-            long rep1_id = db.createRep(rep,new long[]{exercise_id});
-
-            Toast.makeText(getApplicationContext(), "added "+exercisename.getText().toString()+exercise_id+" and rep "+edittextreps.getText().toString()+ rep1_id, Toast.LENGTH_SHORT).show();
+            Rep rep = new Rep(exercise_id,Integer.parseInt(edittextreps.getText().toString()));
+            long rep1_id = db.createRep(rep);
+            Log.i("database","added name: "+exercisename.getText().toString()+" exid: "+exercise_id+" and repamount: "+rep.getRepAmount()+" repid: "+ rep1_id);
+            //Toast.makeText(getApplicationContext(), "added "+exercisename.getText().toString()+exercise_id+" and rep "+edittextreps.getText().toString()+ rep1_id, Toast.LENGTH_SHORT).show();
         }
 
         db.closeDB();

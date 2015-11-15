@@ -1,38 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#ffffff">
 
-    <Button
+    <GridLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Training"
-        android:id="@+id/buttonStartTraining"
-        android:layout_gravity="center_horizontal" />
+        android:layout_height="fill_parent">
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Blueprint"
-        android:id="@+id/buttonAddBlueprint"
-        android:layout_gravity="center_horizontal" />
+        <ImageButton
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonStartTraining"
+            android:src="@drawable/button_startexercise_states"
+            android:scaleType="center"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_gravity="center"
+            android:background="#ffffff" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Add Exercise"
-        android:id="@+id/buttonAddExercise"
-        android:layout_gravity="center_horizontal"
-        android:onClick="menuAdd_Exercise" />
+        <ImageButton
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonAddBlueprint"
+            android:src="@drawable/button_makeblueprint_states"
+            android:scaleType="center"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_gravity="center"
+            android:background="#ffffff" />
 
-    <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Show Exercises"
-        android:id="@+id/buttonShowExercises"
-        android:layout_gravity="center_horizontal"
-        android:onClick="menuShow_Exercises" />
-</LinearLayout>
+        <ImageButton
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonManageExercise"
+            android:src="@drawable/button_manageexercise_states"
+            android:scaleType="center"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:onClick="menuManage_Exercises"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:layout_gravity="center"
+            android:background="#ffffff" />
+
+        <ImageButton
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/buttonGymBro"
+            android:src="@drawable/button_gymbro"
+            android:scaleType="center"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_gravity="center"
+            android:background="#ffffff" />
+    </GridLayout>
+
+</RelativeLayout>

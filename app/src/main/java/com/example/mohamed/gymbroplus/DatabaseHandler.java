@@ -41,20 +41,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_Exercise =
             "CREATE TABLE " + TABLE_Exercise + "(" +
                     KEY_exerciseId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_exerciseName + " TEXT" + ")";
+                    KEY_exerciseName + " TEXT" + ");";
 
     // Rep table create statement
     private static final String CREATE_TABLE_Rep =
             "CREATE TABLE " + TABLE_Rep + "(" +
                     KEY_repId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    KEY_repAmount + " INTEGER" + ")";
+                    KEY_exerciseId + " INTEGER," +
+                    KEY_repAmount + " INTEGER," +
+                    "FOREIGN KEY(" + KEY_exerciseId + ") " +
+                    "REFERENCES " + TABLE_Exercise + "(" + KEY_exerciseId + ") " + ");";
 
     // Exercise_Rep table create statement
-    private static final String CREATE_TABLE_Exercise_Rep =
-            "CREATE TABLE " + TABLE_Exercise_Rep + "(" +
-                    KEY_exerciseId + " INTEGER PRIMARY KEY," +
-                    KEY_repId + " INTEGER," +
-                    "UNIQUE (" + KEY_exerciseId + ", " + KEY_repId + ")" + ")";
+//    private static final String CREATE_TABLE_Exercise_Rep =
+//            "CREATE TABLE " + TABLE_Exercise_Rep + "(" +
+//                    KEY_repId + " INTEGER PRIMARY KEY," +
+//                    KEY_exerciseId + " INTEGER," +
+//                    "UNIQUE (" + KEY_repId + ", " + KEY_exerciseId + ")" + ")";
 
     // constructor
     public DatabaseHandler(Context context) {
@@ -67,7 +70,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // creating required tables
         db.execSQL(CREATE_TABLE_Exercise);
         db.execSQL(CREATE_TABLE_Rep);
-        db.execSQL(CREATE_TABLE_Exercise_Rep);
+        //db.execSQL(CREATE_TABLE_Exercise_Rep);
     }
 
     // When upgrading the database, it will drop the current table and recreate.
@@ -76,7 +79,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Exercise);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Rep);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Exercise_Rep);
+//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Exercise_Rep);
 
         onCreate(db);
     }
@@ -159,19 +162,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
 
     //Create Rep
-    public long createRep(Rep rep, long[] exercise_ids) {
+    public long createRep(Rep rep) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_exerciseId, rep.getExerciseId());
         values.put(KEY_repAmount, rep.getRepAmount());
 
         // insert row
         long rep_id = db.insert(TABLE_Rep, null, values);
 
         // assigning Rep to Exercise
-        for (long exercise_id : exercise_ids) {
-            createExerciseRep(rep_id, exercise_id);
-        }
+//        for (long exercise_id : exercise_ids) {
+//            createExerciseRep( rep_id, exercise_id );
+//        }
 
         return rep_id;
     }
@@ -222,11 +226,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<Rep> getAllRepsByExercise(String exercise_name) {
         List<Rep> reps = new ArrayList<Rep>();
 
-        String selectQuery = "SELECT  * FROM " + TABLE_Rep + " td, "
-                + TABLE_Exercise + " tg, " + TABLE_Exercise_Rep + " tt WHERE tg."
-                + KEY_exerciseName + " = '" + exercise_name + "'" + " AND tg." + KEY_exerciseId
-                + " = " + "tt." + KEY_exerciseId + " AND td." + KEY_repId + " = "
-                + "tt." + KEY_repId;
+        String selectQuery = "SELECT * FROM "+ TABLE_Rep +" r,"+ TABLE_Exercise +" e WHERE e."+ KEY_exerciseName + " = '" + exercise_name + "'" +" AND e."+ KEY_exerciseId +" = r."+ KEY_exerciseId;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -236,6 +236,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 Rep td = new Rep();
                 td.setRepId(c.getInt(c.getColumnIndex(KEY_repId)));
+                td.setExerciseId(c.getInt(c.getColumnIndex(KEY_exerciseId)));
                 td.setRepAmount((c.getInt(c.getColumnIndex(KEY_repAmount))));
 
                 // adding to task list
@@ -271,7 +272,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Creating Exercise_Rep
      */
     //Create ExerciseRep
-    public long createExerciseRep(long exercise_id, long rep_id) {
+    public long createExerciseRep( long rep_id,long exercise_id ) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();

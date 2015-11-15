@@ -22,12 +22,10 @@ public class MainActivity extends AppCompatActivity {
         dbHandler = new DatabaseHandler(getApplicationContext());
     }
     /** Called when the user clicks the Send button */
-    public void menuAdd_Exercise(View view) {
-        Intent intent = new Intent(this, Add_Exercise.class);
-        startActivity(intent);
-    }
-    public void menuShow_Exercises(View view) {
-        Intent intent = new Intent(this, Show_Exercises.class);
+
+
+    public void menuManage_Exercises(View view) {
+        Intent intent = new Intent(this, Manage_Exercises.class);
         startActivity(intent);
     }
 }

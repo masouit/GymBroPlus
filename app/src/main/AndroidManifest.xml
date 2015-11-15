@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".Show_Exercises" >
         </activity>
+        <activity android:name=".Manage_Exercises" >
+        </activity>
     </application>
 
 </manifest>

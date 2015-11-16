@@ -2,8 +2,6 @@ package com.example.mohamed.gymbroplus;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,51 +18,43 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Add_Exercise extends AppCompatActivity {
+public class Edit_Exercise extends AppCompatActivity {
     private LinearLayout mLayout;
+    int exerciselistId;
     private int repCount = 0;
-    // Database Handler
     DatabaseHandler db;
     EditText exercisename,repamount;
     EditText edittextreps;
-
     List<Integer> repidlist = new ArrayList<Integer>();
+    ArrayList<Exercise> exercises;
+    List<Rep> reps = new ArrayList<Rep>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add__exercise);
-        mLayout = (LinearLayout) findViewById(R.id.linearLayout1);
-        setTitle("Add exercise");
-    }
+        setContentView(R.layout.activity_edit__exercise);
 
-    public void addExercise(View view){
-        db = new DatabaseHandler(getApplicationContext());
-        exercisename = (EditText)findViewById(R.id.editTextExercisename);
+        mLayout = (LinearLayout) findViewById(R.id.linearLayoutEdit);
+        setTitle("Edit exercise");
 
-        // Creating exercise
-        Exercise exercise = new Exercise(exercisename.getText().toString());
+        //Get objects from other intent
+        Intent intent = this.getIntent();
+        exercises = (ArrayList<Exercise>) getIntent().getSerializableExtra("exerciselist");
+        exerciselistId = getIntent().getIntExtra("exerciseId",0);
 
-        // Inserting exercise in db
-        int exercise_id = db.createExercise(exercise);
-
-        for(int i=0; i<repidlist.size(); i++) {
-            String edittextid = String.valueOf(repidlist.get(i));
-            int repid = getResources().getIdentifier(edittextid, "id", getPackageName());
-            edittextreps = ((EditText) findViewById(repid));
-            Toast.makeText(getApplicationContext(), "added edittext "+String.valueOf(repid), Toast.LENGTH_SHORT).show();
-            // Inserting reps in db
-            Rep rep = new Rep(exercise_id,Integer.parseInt(edittextreps.getText().toString()));
-            long rep1_id = db.createRep(rep);
-            Log.i("database","added name: "+exercisename.getText().toString()+" exid: "+exercise_id+" and repamount: "+rep.getRepAmount()+" repid: "+ rep1_id);
-            //Toast.makeText(getApplicationContext(), "added "+exercisename.getText().toString()+exercise_id+" and rep "+edittextreps.getText().toString()+ rep1_id, Toast.LENGTH_SHORT).show();
-        }
-
-        db.closeDB();
+        EditText editTextRep = (EditText) findViewById(R.id.editTextEditExercise);
+        //exercises.size();
+        editTextRep.setText(exercises.get(exerciselistId).getExerciseName());
+        addRepTextview(mLayout);
     }
 
     public void addRepTextview(View view){
-        if(repCount<100) {
+        db = new DatabaseHandler(getApplicationContext());
+        reps.addAll(db.getAllRepsByExercise(exercises.get(exerciselistId).getExerciseName()));
+        db.closeDB();
+
+
+        for (int i=0;i<reps.size();i++) {
             repCount++;
             int id_button = repCount;
             int id_edittext = repCount + 100;
@@ -77,6 +65,7 @@ public class Add_Exercise extends AppCompatActivity {
             final EditText editTextRep = (EditText) addView.findViewById(R.id.editTextRep);
             viewTextRep.append(String.valueOf(repCount));
             editTextRep.setId(id_edittext);
+            editTextRep.setText(String.valueOf(reps.get(i).getRepAmount()));
             mLayout.addView(addView);
 
             int edittextrepid = editTextRep.getId();
@@ -101,7 +90,7 @@ public class Add_Exercise extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "added button" + id_, Toast.LENGTH_SHORT).show();
                 btn.setVisibility(View.INVISIBLE);
             }
-            final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollView));
+            final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollView2));
             scrollview.post(new Runnable() {
                 @Override
                 public void run() {
@@ -110,11 +99,8 @@ public class Add_Exercise extends AppCompatActivity {
                 }
             });
         }
-        else{
-            Toast.makeText(getApplicationContext(), "Cannot add more then 100 reps", Toast.LENGTH_SHORT).show();
-        }
     }
-
+    //TODO
     private void delViewButton(View addView,Button buttonRemove) {
         ((LinearLayout) addView.getParent()).removeView(addView);
 
@@ -137,4 +123,34 @@ public class Add_Exercise extends AppCompatActivity {
         textView.setText("Rep" + text);
         return textView;
     }
+
+    public void saveExercise(View view){
+        db = new DatabaseHandler(getApplicationContext());
+        //EditText editTextRep = (EditText) findViewById(R.id.editTextEditExercise);
+        exercisename = (EditText)findViewById(R.id.editTextEditExercise);
+        Exercise exercise = new Exercise(exercisename.getText().toString());
+        int exId = exercises.get(exerciselistId).getExerciseId();
+        //set exerciseid
+        exercise.setExerciseId(exId);
+
+        // update exercise in db
+        int exercise_id = db.updateExercise(exercise);
+
+        for(int i=0; i<repidlist.size(); i++) {
+            String edittextid = String.valueOf(repidlist.get(i));
+            int repid = getResources().getIdentifier(edittextid, "id", getPackageName());
+            edittextreps = ((EditText) findViewById(repid));
+            //Toast.makeText(getApplicationContext(), "added edittext "+String.valueOf(repid), Toast.LENGTH_SHORT).show();
+            // Inserting reps in db
+            Rep rep = new Rep(exercise_id,Integer.parseInt(edittextreps.getText().toString()));
+            int replistid = reps.get(i).getRepId();
+            rep.setRepId(replistid);
+            long rep1_id = db.updateRep(rep);
+            Log.i("database", "added name: " + exercisename.getText().toString() + " exid: " + exercise_id + " and repamount: " + rep.getRepAmount() + " repid: " + replistid);
+            //Toast.makeText(getApplicationContext(), "added "+exercisename.getText().toString()+exercise_id+" and rep "+edittextreps.getText().toString()+ rep1_id, Toast.LENGTH_SHORT).show();
+        }
+
+        db.closeDB();
+    }
+
 }

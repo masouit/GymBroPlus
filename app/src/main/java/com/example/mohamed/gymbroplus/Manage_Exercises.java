@@ -11,6 +11,7 @@ public class Manage_Exercises extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage__exercises);
+        setTitle("Manage exercises");
     }
 
     public void menuAdd_Exercise(View view) {

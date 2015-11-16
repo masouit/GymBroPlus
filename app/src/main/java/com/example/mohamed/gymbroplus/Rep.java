@@ -5,18 +5,18 @@ package com.example.mohamed.gymbroplus;
  * Rep
  */
 public class Rep {
-    private long _repid,_repamount,_exerciseid;
+    private int _repid,_repamount,_exerciseid;
 
     // constructors
     public Rep() {
     }
 
-    public Rep(long exerciseid, int repamount){
+    public Rep(int exerciseid, int repamount){
         _exerciseid = exerciseid;
         _repamount = repamount;
     }
 
-    public Rep(long id, long exerciseid, int repamount){
+    public Rep(int id, int exerciseid, int repamount){
         _repid = id;
         _exerciseid = exerciseid;
         _repamount = repamount;
@@ -32,15 +32,15 @@ public class Rep {
     }
 
     // getters
-    public long getRepId() {
+    public int getRepId() {
         return _repid;
     }
 
-    public long getExerciseId() {
+    public int getExerciseId() {
         return _exerciseid;
     }
 
-    public long getRepAmount() {
+    public int getRepAmount() {
         return _repamount;
     }
 }

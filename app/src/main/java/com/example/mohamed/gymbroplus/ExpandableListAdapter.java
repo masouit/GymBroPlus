@@ -1,7 +1,9 @@
 package com.example.mohamed.gymbroplus;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +94,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
+        lblListHeader.setPaddingRelative(15,15,15,15);
+        // Initialize a new GradientDrawable
+        GradientDrawable gd = new GradientDrawable();
+        // Specify the shape of drawable
+        gd.setShape(GradientDrawable.RECTANGLE);
+
+        // Set the fill color of drawable
+        gd.setColor(Color.rgb(63, 81, 181)); // make the background transparent
+
+        // Make the border rounded
+        gd.setCornerRadius(15.0f); // border corner radius
+        lblListHeader.setBackground(gd);
 
         return convertView;
     }

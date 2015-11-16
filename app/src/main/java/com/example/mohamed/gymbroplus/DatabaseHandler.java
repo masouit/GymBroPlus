@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      */
 
     //Create Exercise
-    public long createExercise(Exercise exercise){
+    public int createExercise(Exercise exercise){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -98,13 +98,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // insert row
         long exercise_id = db.insert(TABLE_Exercise, null, values);
 
-        return exercise_id;
+        return (int)exercise_id;
     }
 
     //GetAll Exercise
     public List<Exercise> getAllExercises() {
         List<Exercise> exercises = new ArrayList<Exercise>();
-        String selectQuery = "SELECT  * FROM " + TABLE_Exercise;
+        String selectQuery = "SELECT  * FROM " + TABLE_Exercise+" ORDER BY "+KEY_exerciseName+" ASC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -116,7 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 t.setExerciseId(c.getInt((c.getColumnIndex(KEY_exerciseId))));
                 t.setExerciseName(c.getString(c.getColumnIndex(KEY_exerciseName)));
 
-                // adding to cats list
+                // adding to exercise list
                 exercises.add(t);
             } while (c.moveToNext());
         }
@@ -139,20 +139,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteExercise(Exercise exercise, boolean should_delete_all_exercise_reps) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // before deleting cat
-        // check if tasks under this cat should also be deleted
+        // before deleting exercise
+        // check if reps under this exercise should also be deleted
         if (should_delete_all_exercise_reps) {
-            // get all tasks under this cat
+            // get all reps under this exercise
             List<Rep> allexercisereps = getAllRepsByExercise(exercise.getExerciseName());
 
-            // delete all tasks
+            // delete all reps
             for (Rep rep : allexercisereps) {
-                // delete task
+                // delete rep
                 deleteRep(rep.getRepId());
             }
         }
 
-        // now delete the cat
+        // now delete the exercise
         db.delete(TABLE_Exercise, KEY_exerciseId + " = ?",
                 new String[] { String.valueOf(exercise.getExerciseId()) });
     }
@@ -214,7 +214,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 td.setRepId(c.getInt(c.getColumnIndex(KEY_repId)));
                 td.setRepAmount((c.getInt(c.getColumnIndex(KEY_repAmount))));
 
-                // adding to task list
+                // adding to rep list
                 reps.add(td);
             } while (c.moveToNext());
         }
@@ -239,7 +239,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 td.setExerciseId(c.getInt(c.getColumnIndex(KEY_exerciseId)));
                 td.setRepAmount((c.getInt(c.getColumnIndex(KEY_repAmount))));
 
-                // adding to task list
+                // adding to rep list
                 reps.add(td);
             } while (c.moveToNext());
         }

@@ -13,19 +13,20 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    DatabaseHandler dbHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbHandler = new DatabaseHandler(getApplicationContext());
     }
     /** Called when the user clicks the Send button */
 
 
     public void menuManage_Exercises(View view) {
         Intent intent = new Intent(this, Manage_Exercises.class);
+        startActivity(intent);
+    }
+    public void menuManage_Blueprints(View view) {
+        Intent intent = new Intent(this, Manage_Blueprints.class);
         startActivity(intent);
     }
 }

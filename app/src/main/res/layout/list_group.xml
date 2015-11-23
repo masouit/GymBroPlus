@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/transparent">
+    android:background="#4b58d0">
 
 
     <TextView
         android:id="@+id/lblListHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:textSize="17dp"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:paddingRight="25dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/edit"
+        android:paddingLeft="10dp" />
+    <ImageView
+        android:id="@+id/edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        android:contentDescription="@string/app_name"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/delete" />
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_delete"
+        android:contentDescription="@string/app_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 
-</LinearLayout>
+</RelativeLayout>

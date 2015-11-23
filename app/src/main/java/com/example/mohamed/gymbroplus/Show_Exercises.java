@@ -1,25 +1,12 @@
 package com.example.mohamed.gymbroplus;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -28,19 +15,16 @@ import android.widget.ExpandableListView.OnGroupCollapseListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Show_Exercises extends AppCompatActivity {
     DatabaseHandler db;
     ArrayList<Exercise> exercises = new ArrayList<Exercise>();
     List<Rep> reps = new ArrayList<Rep>();
 
-    ExpandableListAdapter listAdapter;
+    ExpandableListExerciseAdapter listAdapter;
     ExpandableListView expListView;
-    List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    List<Exercise> listDataHeader;
 
 
     @Override
@@ -63,7 +47,7 @@ public class Show_Exercises extends AppCompatActivity {
         if (listAdapter == null)
         {
             //Create ExpandableListAdapter Object
-            listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+            listAdapter = new ExpandableListExerciseAdapter(listDataHeader,this);
 
             // Set Adapter to ExpandableList Adapter
             expListView.setAdapter(listAdapter);
@@ -73,11 +57,6 @@ public class Show_Exercises extends AppCompatActivity {
             // Refresh ExpandableListView data
             listAdapter.notifyDataSetChanged();
         }
-
-//        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-//
-//        // setting list adapter
-//        expListView.setAdapter(listAdapter);
 
         registerForContextMenu(expListView);
         // Listview Group click listener
@@ -126,15 +105,41 @@ public class Show_Exercises extends AppCompatActivity {
                 Toast.makeText(
                         getApplicationContext(),
                         listDataHeader.get(groupPosition)
-                                + " : "
-                                + listDataChild.get(
-                                listDataHeader.get(groupPosition)).get(
-                                childPosition), Toast.LENGTH_SHORT)
+                                + " : ", Toast.LENGTH_SHORT)
                         .show();
                 return false;
             }
         });
+
+//        ImageView delete = (ImageView) expListView.findViewById(R.id.delete);
+//        delete.setOnClickListener(new ExpandableListView.OnClickListener() {
+//
+//            public void onClick(final View v) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+//                builder.setMessage("Do you want to remove?");
+//                builder.setCancelable(false);
+//                builder.setPositiveButton("Yes",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+//                                String group = listDataHeader.get(groupPosition);
+//                                listDataHeader.remove(groupPosition);
+//                                listAdapter.notifyDataSetChanged();
+//                                Toast.makeText(getBaseContext(), " Deleted", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                builder.setNegativeButton("No",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//                AlertDialog alertDialog = builder.create();
+//                alertDialog.show();
+//            }
+//        });
     }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -193,18 +198,6 @@ public class Show_Exercises extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
     public void editExercise(Exercise exercise,int exerciseId){
-        Toast.makeText(
-                getApplicationContext(),
-                "EDIT "+exercise.getExerciseName()
-                , Toast.LENGTH_SHORT)
-                .show();
-        //db = new DatabaseHandler(getApplicationContext());
-        //exercise.setExerciseName(exercise.getExerciseName()+"edited");
-        //db.updateExercise(exercise);
-
-//        intent.putExtra("Contact_list", ContactLis);
-//        ArrayList exerciselist = new ArrayList();
-//        exerciselist.add(new String(exercise.getExerciseId(),exercise.getExerciseName()));
 
         Intent intent = new Intent(this, Edit_Exercise.class);
         intent.putExtra("exerciselist", exercises);
@@ -238,32 +231,21 @@ public class Show_Exercises extends AppCompatActivity {
      * Preparing the list data
      */
     private void prepareListData() {
+        listDataHeader = new ArrayList<Exercise>();
         db = new DatabaseHandler(getApplicationContext());
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
         exercises.addAll(db.getAllExercises());
-        int size = exercises.size();
-        //String repsize,headername,headernametotal;
 
-        List<List<String>> lists = new ArrayList<List<String>>();
-        for (int i = 0; i < size; i++) {
-            List<String> list = new ArrayList<>();
-            //listDataHeader.add(exercises.get(i).getExerciseName());
+        for (int i = 0; i < exercises.size(); i++) {
+            ArrayList<Rep> list = new ArrayList<Rep>();
 
-            reps.addAll(db.getAllRepsByExercise(exercises.get(i).getExerciseName()));
+            reps.addAll(db.getAllRepsByExercise(exercises.get(i).getExerciseId()));
             for (int j = 0; j < reps.size(); j++){
-                list.add("Rep"+(j+1)+": "+String.valueOf(reps.get(j).getRepAmount()));
+                list.add(reps.get(j));
             }
-            lists.add(list);
-            //repsize = " ("+String.valueOf(reps.size())+")reps";
-            //headername = exercises.get(i).getExerciseName();
-            //headernametotal = headername+repsize;
+            exercises.get(i).setExerciseReps(list);
             reps.clear();
-            listDataHeader.add(exercises.get(i).getExerciseName());
-
-            // Use the list further...
-            listDataChild.put(exercises.get(i).getExerciseName(), lists.get(i));
         }
+        listDataHeader.addAll(exercises);
         db.closeDB();
     }
 }

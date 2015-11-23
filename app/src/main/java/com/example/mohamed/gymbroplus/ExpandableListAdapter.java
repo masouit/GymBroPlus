@@ -13,17 +13,18 @@ import android.widget.TextView;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  * Created by Mohamed on 14-11-2015.
  */
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context _context;
-    private List<String> _listDataHeader; // header titles
+    private List<Exercise> _listDataHeader; // header titles
     // child data in format of header title, child title
-    private HashMap<String, List<String>> _listDataChild;
+    private HashMap<Exercise, List<Rep>> _listDataChild;
 
-    public ExpandableListAdapter(Context context, List<String> listDataHeader,
-                                 HashMap<String, List<String>> listChildData) {
+    public ExpandableListAdapter(Context context, List<Exercise> listDataHeader,
+                                 HashMap<Exercise, List<Rep>> listChildData) {
         this._context = context;
         this._listDataHeader = listDataHeader;
         this._listDataChild = listChildData;
@@ -90,8 +91,34 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.list_group, null);
         }
 
-        TextView lblListHeader = (TextView) convertView
-                .findViewById(R.id.lblListHeader);
+//        ImageView delete = (ImageView) convertView.findViewById(R.id.delete);
+//        delete.setOnClickListener(new ExpandableListView.OnClickListener() {
+//
+//            public void onClick(View v) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(_context);
+//                builder.setMessage("Do you want to remove?");
+//                builder.setCancelable(false);
+//                builder.setPositiveButton("Yes",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                String group = _listDataHeader.get(groupPosition);
+//                                _listDataHeader.remove(groupPosition);
+//                                notifyDataSetChanged();
+//                                Toast.makeText(_context, " Deleted", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                builder.setNegativeButton("No",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//                AlertDialog alertDialog = builder.create();
+//                alertDialog.show();
+//            }
+//        });
+
+        TextView lblListHeader = (TextView) convertView.findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
         lblListHeader.setPaddingRelative(15,15,15,15);
@@ -104,7 +131,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         gd.setColor(Color.rgb(63, 81, 181)); // make the background transparent
 
         // Make the border rounded
-        gd.setCornerRadius(15.0f); // border corner radius
+//        gd.setCornerRadius(15.0f); // border corner radius
         lblListHeader.setBackground(gd);
 
         return convertView;

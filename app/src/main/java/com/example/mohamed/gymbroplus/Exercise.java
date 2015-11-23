@@ -4,6 +4,9 @@ package com.example.mohamed.gymbroplus;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Mohamed on 5-11-2015.
  * Exercise
@@ -11,6 +14,8 @@ import android.os.Parcelable;
 public class Exercise implements Parcelable {
     private int _exerciseid;
     private String _exercisename;
+    private List<Rep> repList = new ArrayList<Rep>();
+
     //parceable settings
     private Exercise(Parcel in) {
         _exerciseid = in.readInt();
@@ -76,7 +81,9 @@ public class Exercise implements Parcelable {
     public String getExerciseName() {
         return _exercisename;
     }
-
-
+    public List<Rep> getRepList() { return repList; }
+    public void setExerciseReps(List<Rep> repList) {
+        this.repList = repList;
+    }
 
 }

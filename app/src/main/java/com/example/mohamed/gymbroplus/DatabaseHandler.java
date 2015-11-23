@@ -22,19 +22,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     protected static final String DATABASE_NAME     = "GymBro";
 
     // table names
-    private static final String TABLE_Exercise      = "Exercise";
-    private static final String TABLE_Rep           = "Rep";
-    private static final String TABLE_Exercise_Rep  = "Exercise_Rep";
+    private static final String TABLE_Exercise          = "Exercise";
+    private static final String TABLE_Rep               = "Rep";
+    private static final String TABLE_Blueprint         = "Blueprint";
+    private static final String TABLE_BlueprintDay      = "BlueprintDay";
+    private static final String TABLE_DayExercise       = "DayExercise";
+
 
     // Common column names
     private static final String KEY_exerciseId      = "exerciseId";
     private static final String KEY_repId           = "repId";
+    private static final String KEY_blueprintId     = "blueprintId";
+    private static final String KEY_bpdayId         = "bpdayId";
 
     // table Exercise column names
     private static final String KEY_exerciseName    = "exerciseName";
 
     // table Rep column names
     private static final String KEY_repAmount       = "repAmount";
+
+    // table Blueprint column names
+    private static final String KEY_blueprintName   = "blueprintName";
+
+    // table BlueprintDay column names
+    private static final String KEY_bpdayNumber     = "bpdayNumber";
+
+    // table DayExercise column names
+    private static final String KEY_dayExId         = "dayExId";
+    private static final String KEY_orderNumber     = "orderNumber";
 
     // Table Create Statements
     // Exercise table create statement
@@ -52,12 +67,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     "FOREIGN KEY(" + KEY_exerciseId + ") " +
                     "REFERENCES " + TABLE_Exercise + "(" + KEY_exerciseId + ") " + ");";
 
-    // Exercise_Rep table create statement
-//    private static final String CREATE_TABLE_Exercise_Rep =
-//            "CREATE TABLE " + TABLE_Exercise_Rep + "(" +
-//                    KEY_repId + " INTEGER PRIMARY KEY," +
-//                    KEY_exerciseId + " INTEGER," +
-//                    "UNIQUE (" + KEY_repId + ", " + KEY_exerciseId + ")" + ")";
+    // Blueprint table create statement
+    private static final String CREATE_TABLE_Blueprint =
+            "CREATE TABLE " + TABLE_Blueprint + "(" +
+                    KEY_blueprintId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    KEY_blueprintName + " TEXT" + ");";
+
+    // BlueprintDay table create statement
+    private static final String CREATE_TABLE_BlueprintDay =
+            "CREATE TABLE " + TABLE_BlueprintDay + "(" +
+                    KEY_bpdayId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    KEY_blueprintId + " INTEGER," +
+                    KEY_bpdayNumber + " INTEGER," +
+                    "FOREIGN KEY(" + KEY_blueprintId + ") " +
+                    "REFERENCES " + TABLE_Blueprint + "(" + KEY_blueprintId + ") " + ");";
+
+    // DayExercise table create statement
+    private static final String CREATE_TABLE_DayExercise =
+            "CREATE TABLE " + TABLE_DayExercise + "(" +
+                    KEY_dayExId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    KEY_bpdayId + " INTEGER," +
+                    KEY_orderNumber + " INTEGER," +
+                    KEY_exerciseId + " INTEGER," +
+                    "FOREIGN KEY(" + KEY_bpdayId + ") " +
+                    "REFERENCES " + TABLE_BlueprintDay + "(" + KEY_bpdayId + "), " +
+                    "FOREIGN KEY(" + KEY_exerciseId + ") " +
+                    "REFERENCES " + TABLE_Exercise + "(" + KEY_exerciseId + ") " + ");";
 
     // constructor
     public DatabaseHandler(Context context) {
@@ -70,7 +105,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // creating required tables
         db.execSQL(CREATE_TABLE_Exercise);
         db.execSQL(CREATE_TABLE_Rep);
-        //db.execSQL(CREATE_TABLE_Exercise_Rep);
+        db.execSQL(CREATE_TABLE_Blueprint);
+        db.execSQL(CREATE_TABLE_BlueprintDay);
+        db.execSQL(CREATE_TABLE_DayExercise);
     }
 
     // When upgrading the database, it will drop the current table and recreate.
@@ -79,7 +116,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Exercise);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Rep);
-//        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Exercise_Rep);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Blueprint);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_BlueprintDay);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DayExercise);
 
         onCreate(db);
     }
@@ -143,7 +182,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // check if reps under this exercise should also be deleted
         if (should_delete_all_exercise_reps) {
             // get all reps under this exercise
-            List<Rep> allexercisereps = getAllRepsByExercise(exercise.getExerciseName());
+            List<Rep> allexercisereps = getAllRepsByExercise(exercise.getExerciseId());
 
             // delete all reps
             for (Rep rep : allexercisereps) {
@@ -154,7 +193,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // now delete the exercise
         db.delete(TABLE_Exercise, KEY_exerciseId + " = ?",
-                new String[] { String.valueOf(exercise.getExerciseId()) });
+                new String[]{String.valueOf(exercise.getExerciseId())});
     }
 
     /**
@@ -171,11 +210,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // insert row
         long rep_id = db.insert(TABLE_Rep, null, values);
-
-        // assigning Rep to Exercise
-//        for (long exercise_id : exercise_ids) {
-//            createExerciseRep( rep_id, exercise_id );
-//        }
 
         return rep_id;
     }
@@ -223,10 +257,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //Get All Reps from Exercise
-    public List<Rep> getAllRepsByExercise(String exercise_name) {
+    public List<Rep> getAllRepsByExercise(int exercise_id) {
         List<Rep> reps = new ArrayList<Rep>();
 
-        String selectQuery = "SELECT * FROM "+ TABLE_Rep +" r,"+ TABLE_Exercise +" e WHERE e."+ KEY_exerciseName + " = '" + exercise_name + "'" +" AND e."+ KEY_exerciseId +" = r."+ KEY_exerciseId;
+        String selectQuery = "SELECT * FROM "+ TABLE_Rep +" r INNER JOIN "+ TABLE_Exercise +" e ON e."+ KEY_exerciseId +" = r."+KEY_exerciseId+" WHERE e."+ KEY_exerciseId + " = " + exercise_id;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);
@@ -265,24 +299,217 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TABLE_Rep, KEY_repId + " = ?",
-                new String[] { String.valueOf(rep_id) });
+                new String[]{String.valueOf(rep_id)});
     }
 
     /**
-     * Creating Exercise_Rep
+     * Blueprint
      */
-    //Create ExerciseRep
-    public long createExerciseRep( long rep_id,long exercise_id ) {
+
+    //Create Blueprint
+    public int createBlueprint(Blueprint blueprint){
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_exerciseId, exercise_id);
-        values.put(KEY_repId, rep_id);
+        values.put(KEY_blueprintName, blueprint.getBlueprintName());
 
-        long id = db.insert(TABLE_Exercise_Rep, null, values);
+        // insert row
+        long blueprint_id = db.insert(TABLE_Blueprint, null, values);
 
-        return id;
+        return (int)blueprint_id;
     }
+
+    //Get Blueprint
+    public Blueprint getBlueprint(long blueprintday_id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_Blueprint + " WHERE "
+                + KEY_blueprintId + " = " + blueprintday_id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        Blueprint td = new Blueprint();
+        td.setBlueprintId(c.getInt((c.getColumnIndex(KEY_blueprintId))));
+        td.setBlueprintName(c.getString(c.getColumnIndex(KEY_blueprintName)));
+
+        return td;
+    }
+
+    //GetAll Blueprint
+    public List<Blueprint> getAllBlueprints() {
+        List<Blueprint> blueprints = new ArrayList<Blueprint>();
+        String selectQuery = "SELECT  * FROM " + TABLE_Blueprint+" ORDER BY "+KEY_blueprintName+" ASC";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                Blueprint t = new Blueprint();
+                t.setBlueprintId(c.getInt((c.getColumnIndex(KEY_blueprintId))));
+                t.setBlueprintName(c.getString(c.getColumnIndex(KEY_blueprintName)));
+
+                // adding to exercise list
+                blueprints.add(t);
+            } while (c.moveToNext());
+        }
+        return blueprints;
+    }
+
+    //Update Blueprint
+    public int updateBlueprint(Blueprint blueprint) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TABLE_Blueprint, blueprint.getBlueprintName());
+
+        // updating row
+        return db.update(TABLE_Blueprint, values, KEY_blueprintId + " = ?",
+                new String[] { String.valueOf(blueprint.getBlueprintId()) });
+    }
+
+    //Delete Blueprint (will delete days first)
+    public void deleteBlueprint(Blueprint blueprint, boolean should_delete_all_exercise_reps) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // before deleting exercise
+        // check if reps under this exercise should also be deleted
+        if (should_delete_all_exercise_reps) {
+            // get all days under this exercise
+            List<BlueprintDay> allblueprintdays = getAllBlueprintDaysByBlueprint(blueprint.getBlueprintId());
+
+            // delete all days
+            for (BlueprintDay day : allblueprintdays) {
+                // delete rep
+                deleteRep(day.getBlueprintDayId());
+            }
+        }
+
+        // now delete the exercise
+        db.delete(TABLE_Blueprint, KEY_blueprintId + " = ?",
+                new String[] { String.valueOf(blueprint.getBlueprintId()) });
+    }
+
+    /**
+     * Rep
+     */
+
+    //Create BlueprintDay
+    public long createBlueprintDay(BlueprintDay blueprintday) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_blueprintId, blueprintday.getBlueprintId());
+        values.put(KEY_bpdayNumber, blueprintday.getBlueprintDayNumber());
+
+        // insert row
+        long blueprintday_id = db.insert(TABLE_BlueprintDay, null, values);
+
+        return blueprintday_id;
+    }
+
+    //Get BlueprintDay
+    public BlueprintDay getBlueprintDay(long blueprintday_id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT  * FROM " + TABLE_BlueprintDay + " WHERE "
+                + KEY_bpdayId + " = " + blueprintday_id;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+
+        BlueprintDay td = new BlueprintDay();
+        td.setBlueprintDayId(c.getInt(c.getColumnIndex(KEY_bpdayId)));
+        td.setBlueprintDayNumber((c.getInt(c.getColumnIndex(KEY_bpdayNumber))));
+
+        return td;
+    }
+
+    //Get All BlueprintDays
+    public List<BlueprintDay> getAllBlueprintDays() {
+        List<BlueprintDay> blueprintdays = new ArrayList<BlueprintDay>();
+        String selectQuery = "SELECT  * FROM " + TABLE_BlueprintDay;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                BlueprintDay td = new BlueprintDay();
+                td.setBlueprintDayId(c.getInt(c.getColumnIndex(KEY_bpdayId)));
+                td.setBlueprintDayNumber((c.getInt(c.getColumnIndex(KEY_bpdayNumber))));
+
+                // adding to rep list
+                blueprintdays.add(td);
+            } while (c.moveToNext());
+        }
+
+        return blueprintdays;
+    }
+
+    //Get All Days from Blueprint
+    public List<BlueprintDay> getAllBlueprintDaysByBlueprint(int blueprint_id) {
+        List<BlueprintDay> blueprintdays = new ArrayList<BlueprintDay>();
+
+        String selectQuery = "SELECT * FROM "+ TABLE_BlueprintDay +" r INNER JOIN "+ TABLE_Blueprint +" e ON e."+ KEY_blueprintId +" = r."+KEY_blueprintId+" WHERE e."+ KEY_blueprintId + " = " + blueprint_id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                BlueprintDay td = new BlueprintDay();
+                td.setBlueprintDayId(c.getInt(c.getColumnIndex(KEY_bpdayId)));
+                td.setBlueprintId(c.getInt(c.getColumnIndex(KEY_blueprintId)));
+                td.setBlueprintDayNumber((c.getInt(c.getColumnIndex(KEY_bpdayNumber))));
+
+                // adding to rep list
+                blueprintdays.add(td);
+            } while (c.moveToNext());
+        }
+
+        return blueprintdays;
+    }
+
+    //Update BlueprintDay
+    public int updateBlueprintDay(BlueprintDay blueprintday) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_bpdayNumber, blueprintday.getBlueprintDayNumber());
+
+        // updating row
+        return db.update(TABLE_BlueprintDay, values, KEY_bpdayId + " = ?",
+                new String[] { String.valueOf(blueprintday.getBlueprintDayId()) });
+    }
+
+    //Delete BlueprintDay
+    public void deleteBlueprintDay(long blueprintday_id) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_BlueprintDay, KEY_bpdayId + " = ?",
+                new String[]{String.valueOf(blueprintday_id)});
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     // closing database
     public void closeDB() {

@@ -33,8 +33,6 @@ public class Edit_Exercise extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit__exercise);
-
-        mLayout = (LinearLayout) findViewById(R.id.linearLayoutEdit);
         setTitle("Edit exercise");
 
         //Get objects from other intent
@@ -42,17 +40,18 @@ public class Edit_Exercise extends AppCompatActivity {
         exercises = (ArrayList<Exercise>) getIntent().getSerializableExtra("exerciselist");
         exerciselistId = getIntent().getIntExtra("exerciseId",0);
 
-        EditText editTextRep = (EditText) findViewById(R.id.editTextEditExercise);
-        //exercises.size();
-        editTextRep.setText(exercises.get(exerciselistId).getExerciseName());
+        mLayout = (LinearLayout) findViewById(R.id.linearLayoutEdit);
         addRepTextview(mLayout);
     }
 
     public void addRepTextview(View view){
         db = new DatabaseHandler(getApplicationContext());
-        reps.addAll(db.getAllRepsByExercise(exercises.get(exerciselistId).getExerciseName()));
+        reps.addAll(db.getAllRepsByExercise(exercises.get(exerciselistId).getExerciseId()));
         db.closeDB();
 
+        exercisename = (EditText) findViewById(R.id.editTextEditExercise);
+        exercisename.setText(exercises.get(exerciselistId).getExerciseName());
+        exercisename.setSelectAllOnFocus(true);
 
         for (int i=0;i<reps.size();i++) {
             repCount++;
@@ -66,6 +65,7 @@ public class Edit_Exercise extends AppCompatActivity {
             viewTextRep.append(String.valueOf(repCount));
             editTextRep.setId(id_edittext);
             editTextRep.setText(String.valueOf(reps.get(i).getRepAmount()));
+            editTextRep.setSelectAllOnFocus(true);
             mLayout.addView(addView);
 
             int edittextrepid = editTextRep.getId();
@@ -79,7 +79,7 @@ public class Edit_Exercise extends AppCompatActivity {
             buttonRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    delViewButton(addView, buttonRemove);
+                    delRep(addView, buttonRemove);
                     editTextRep.requestFocus();
                 }
             });
@@ -99,9 +99,10 @@ public class Edit_Exercise extends AppCompatActivity {
                 }
             });
         }
+        exercisename.requestFocus();
     }
     //TODO
-    private void delViewButton(View addView,Button buttonRemove) {
+    private void delRep(View addView,Button buttonRemove) {
         ((LinearLayout) addView.getParent()).removeView(addView);
 
         repCount--;
@@ -112,7 +113,7 @@ public class Edit_Exercise extends AppCompatActivity {
             btn.setVisibility(View.VISIBLE);
             int id_edittext = repCount + 100;
             EditText editTextRep = (EditText) findViewById(id_edittext);
-            editTextRep.requestFocus();
+            //editTextRep.requestFocus();
         }
     }
 
@@ -127,7 +128,7 @@ public class Edit_Exercise extends AppCompatActivity {
     public void saveExercise(View view){
         db = new DatabaseHandler(getApplicationContext());
         //EditText editTextRep = (EditText) findViewById(R.id.editTextEditExercise);
-        exercisename = (EditText)findViewById(R.id.editTextEditExercise);
+        //exercisename = (EditText)findViewById(R.id.editTextEditExercise);
         Exercise exercise = new Exercise(exercisename.getText().toString());
         int exId = exercises.get(exerciselistId).getExerciseId();
         //set exerciseid
@@ -153,4 +154,67 @@ public class Edit_Exercise extends AppCompatActivity {
         db.closeDB();
     }
 
+    public void addNewRepTextview(View view){
+        if(repCount<100) {
+            repCount++;
+            int id_button = repCount;
+            int id_edittext = repCount + 100;
+
+            final LayoutInflater layoutInflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View addView = layoutInflater.inflate(R.layout.rep_row, null);
+            TextView viewTextRep = (TextView) addView.findViewById(R.id.textViewRep);
+            final EditText editTextRep = (EditText) addView.findViewById(R.id.editTextRep);
+            viewTextRep.append(String.valueOf(repCount));
+            editTextRep.setId(id_edittext);
+            mLayout.addView(addView);
+
+            int edittextrepid = editTextRep.getId();
+            repidlist.add(edittextrepid);
+            //Toast.makeText(getApplicationContext(), "edittextrepid "+edittextrepid, Toast.LENGTH_SHORT).show();
+
+            final Button buttonRemove = (Button) addView.findViewById(R.id.remove);
+            buttonRemove.setId(id_button);
+            buttonRemove.setText("-");
+
+            buttonRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    delNewRep(addView, buttonRemove);
+                    editTextRep.requestFocus();
+                }
+            });
+
+            if (repCount > 1) {
+                int id_ = buttonRemove.getId() - 1;
+                Button btn = ((Button) findViewById(id_));
+                //Toast.makeText(getApplicationContext(), "added button" + id_, Toast.LENGTH_SHORT).show();
+                btn.setVisibility(View.INVISIBLE);
+            }
+            final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollView2));
+            scrollview.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollview.fullScroll(ScrollView.FOCUS_DOWN);
+                    editTextRep.requestFocus();
+                }
+            });
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Cannot add more then 100 reps", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void delNewRep(View addView,Button buttonRemove) {
+        ((LinearLayout) addView.getParent()).removeView(addView);
+
+        repCount--;
+        if(repCount>0){
+            int id_ = buttonRemove.getId()-1;
+            Button btn = ((Button) findViewById(id_));
+            //Toast.makeText(getApplicationContext(), "added button"+id_, Toast.LENGTH_SHORT).show();
+            btn.setVisibility(View.VISIBLE);
+            int id_edittext = repCount + 100;
+            EditText editTextRep = (EditText) findViewById(id_edittext);
+            editTextRep.requestFocus();
+        }
+    }
 }

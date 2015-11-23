@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mohamed.gymbroplus" >
+    package="com.example.mohamed.gymbroplus">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".MainActivity" >
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Add_Exercise" >
-        </activity>
-        <activity android:name=".Show_Exercises" >
-        </activity>
-        <activity android:name=".Manage_Exercises" >
-        </activity>
-        <activity android:name=".Edit_Exercise" >
-        </activity>
+        <activity
+            android:name=".Add_Exercise"
+            android:windowSoftInputMode="stateVisible" />
+        <activity android:name=".Show_Exercises" />
+        <activity android:name=".Manage_Exercises" />
+        <activity android:name=".Edit_Exercise" />
+        <activity android:name=".Add_Blueprint" />
+        <activity android:name=".Manage_Blueprints" />
+        <activity android:name=".Edit_Blueprint" />
+        <activity android:name=".Edit_day" />
+        <activity android:name=".Show_Blueprints"></activity>
     </application>
 
 </manifest>

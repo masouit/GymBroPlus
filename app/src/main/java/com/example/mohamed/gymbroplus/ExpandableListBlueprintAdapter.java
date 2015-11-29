@@ -3,6 +3,7 @@ package com.example.mohamed.gymbroplus;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ExpandableListBlueprintAdapter extends BaseExpandableListAdapter {
     private List<Blueprint> catList;
     private Context ctx;
+
 
     public ExpandableListBlueprintAdapter(List<Blueprint> catList, Context ctx) {
 
@@ -52,10 +54,12 @@ public class ExpandableListBlueprintAdapter extends BaseExpandableListAdapter {
         }
 
         TextView itemName = (TextView) v.findViewById(R.id.lblListItem);
+        TextView exCount = (TextView) v.findViewById(R.id.textViewExCount);
 
         BlueprintDay day = catList.get(groupPosition).getdayList().get(childPosition);
 
         itemName.setText(String.valueOf(day.getBlueprintDayNumber()));
+
 
         return v;
 
@@ -101,9 +105,9 @@ public class ExpandableListBlueprintAdapter extends BaseExpandableListAdapter {
         groupName.setTypeface(null, Typeface.BOLD);
         //groupName.setTextColor(Color.BLACK);
 
+        //DELETE BLUEPRINT
         ImageView delete = (ImageView) v.findViewById(R.id.delete);
         delete.setOnClickListener(new ExpandableListView.OnClickListener() {
-
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                 builder.setMessage("Do you want to remove?");
@@ -115,7 +119,7 @@ public class ExpandableListBlueprintAdapter extends BaseExpandableListAdapter {
                                 catList.remove(groupPosition);
                                 notifyDataSetChanged();
                                 Show_Blueprints sb = new Show_Blueprints();
-                                sb.delBlueprint(group,true,ctx);
+                                sb.delBlueprint(group, true, ctx);
 
                                 Toast.makeText(ctx, " Deleted", Toast.LENGTH_SHORT).show();
                             }
@@ -128,6 +132,16 @@ public class ExpandableListBlueprintAdapter extends BaseExpandableListAdapter {
                         });
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
+            }
+        });
+        //EDIT BLUEPRINT
+        ImageView edit = (ImageView) v.findViewById(R.id.edit);
+        edit.setOnClickListener(new ExpandableListView.OnClickListener() {
+            public void onClick(View v) {
+                Blueprint group = catList.get(groupPosition);
+                Intent intent = new Intent(ctx, Edit_Blueprint.class);
+                intent.putExtra("blueprint", group);
+                ctx.startActivity(intent);
             }
         });
 

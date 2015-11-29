@@ -37,6 +37,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // table Exercise column names
     private static final String KEY_exerciseName    = "exerciseName";
+    private static final String KEY_groupName       = "groupName";
 
     // table Rep column names
     private static final String KEY_repAmount       = "repAmount";
@@ -56,6 +57,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_Exercise =
             "CREATE TABLE " + TABLE_Exercise + "(" +
                     KEY_exerciseId + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    KEY_groupName + " TEXT," +
                     KEY_exerciseName + " TEXT" + ");";
 
     // Rep table create statement
@@ -133,6 +135,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_exerciseName, exercise.getExerciseName());
+        values.put(KEY_groupName, exercise.getGroupName());
 
         // insert row
         long exercise_id = db.insert(TABLE_Exercise, null, values);
@@ -154,6 +157,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 Exercise t = new Exercise();
                 t.setExerciseId(c.getInt((c.getColumnIndex(KEY_exerciseId))));
                 t.setExerciseName(c.getString(c.getColumnIndex(KEY_exerciseName)));
+                t.setGroupName(c.getString(c.getColumnIndex(KEY_groupName)));
 
                 // adding to exercise list
                 exercises.add(t);
@@ -168,6 +172,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_exerciseName, exercise.getExerciseName());
+        values.put(KEY_groupName, exercise.getGroupName());
 
         // updating row
         return db.update(TABLE_Exercise, values, KEY_exerciseId + " = ?",
@@ -395,7 +400,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Rep
+     * BlueprintDay
      */
 
     //Create BlueprintDay
@@ -500,16 +505,67 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(blueprintday_id)});
     }
 
+    /**
+     * DayExercise
+     */
+
+    //Create DayExercise
+    public long createDayExercise(DayExercise dayexercise) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_bpdayId, dayexercise.getBpDayId());
+        values.put(KEY_orderNumber, dayexercise.getOrdernumber());
+        values.put(KEY_exerciseId, dayexercise.getExersieId());
+
+        // insert row
+        long dayexercise_id = db.insert(TABLE_DayExercise, null, values);
+
+        return dayexercise_id;
+    }
+
+    //Get DayExercise
+
+    //Get AllDayExercisesByBlueprintDay
+    public List<DayExercise> getAllDayExercisesByBlueprintDay(int blueprintday_id) {
+        List<DayExercise> dayexercises = new ArrayList<DayExercise>();
+
+        String selectQuery = "SELECT * FROM "+ TABLE_DayExercise +" r INNER JOIN "+ TABLE_BlueprintDay +" e ON e."+ KEY_bpdayId +" = r."+KEY_bpdayId+" WHERE e."+ KEY_bpdayId + " = " + blueprintday_id;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()) {
+            do {
+                DayExercise td = new DayExercise();
+                td.setDayExId(c.getInt(c.getColumnIndex(KEY_dayExId)));
+                td.setBpDayId(c.getInt(c.getColumnIndex(KEY_bpdayId)));
+                td.setOrdernumber((c.getInt(c.getColumnIndex(KEY_orderNumber))));
+                td.setExersieId((c.getInt(c.getColumnIndex(KEY_exerciseId))));
+
+                // adding to rep list
+                dayexercises.add(td);
+            } while (c.moveToNext());
+        }
+
+        return dayexercises;
+    }
 
 
 
 
+    //get countexday
+    public int countExDayById(int blueprintday_id){
+        int count;
+        String selectQuery = "SELECT COUNT("+ KEY_bpdayId +") FROM "+ TABLE_DayExercise +" WHERE "+ KEY_bpdayId + " = " + blueprintday_id+" GROUP BY "+KEY_bpdayId;
 
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        count = c.getInt(0);
 
-
-
-
-
+        return count;
+    }
 
     // closing database
     public void closeDB() {

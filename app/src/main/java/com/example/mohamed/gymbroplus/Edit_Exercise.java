@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,16 +21,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Edit_Exercise extends AppCompatActivity {
+public class Edit_Exercise extends AppCompatActivity implements OnCheckedChangeListener {
     private LinearLayout mLayout;
-    int exerciselistId;
+    //int exerciselistId;
     private int repCount = 0;
     DatabaseHandler db;
     EditText exercisename,repamount;
     EditText edittextreps;
     List<Integer> repidlist = new ArrayList<Integer>();
-    ArrayList<Exercise> exercises;
+    Exercise exercises;
+    //ArrayList<Exercise> exercises;
     List<Rep> reps = new ArrayList<Rep>();
+    RadioButton cbChest,cbBack,cbShoulder,cbAbs,cbLeg,cbArms;
+    String groupname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +43,22 @@ public class Edit_Exercise extends AppCompatActivity {
 
         //Get objects from other intent
         Intent intent = this.getIntent();
-        exercises = (ArrayList<Exercise>) getIntent().getSerializableExtra("exerciselist");
-        exerciselistId = getIntent().getIntExtra("exerciseId",0);
+        exercises = (Exercise) intent.getParcelableExtra("exerciselist");
+        cbChest     = (RadioButton) findViewById(R.id.imageViewChest);
+        cbBack      = (RadioButton) findViewById(R.id.imageViewBack);
+        cbShoulder  = (RadioButton) findViewById(R.id.imageViewShoulder);
+        cbAbs       = (RadioButton) findViewById(R.id.imageViewAbs);
+        cbLeg       = (RadioButton) findViewById(R.id.imageViewLegs);
+        cbArms      = (RadioButton) findViewById(R.id.imageViewArms);
+
+        cbChest.setOnCheckedChangeListener(this);
+        cbBack.setOnCheckedChangeListener(this);
+        cbShoulder.setOnCheckedChangeListener(this);
+        cbAbs.setOnCheckedChangeListener(this);
+        cbLeg.setOnCheckedChangeListener(this);
+        cbArms.setOnCheckedChangeListener(this);
+
+        setGroupname(exercises.getGroupName());
 
         mLayout = (LinearLayout) findViewById(R.id.linearLayoutEdit);
         addRepTextview(mLayout);
@@ -46,11 +66,11 @@ public class Edit_Exercise extends AppCompatActivity {
 
     public void addRepTextview(View view){
         db = new DatabaseHandler(getApplicationContext());
-        reps.addAll(db.getAllRepsByExercise(exercises.get(exerciselistId).getExerciseId()));
+        reps.addAll(db.getAllRepsByExercise(exercises.getExerciseId()));
         db.closeDB();
 
         exercisename = (EditText) findViewById(R.id.editTextEditExercise);
-        exercisename.setText(exercises.get(exerciselistId).getExerciseName());
+        exercisename.setText(exercises.getExerciseName());
         exercisename.setSelectAllOnFocus(true);
 
         for (int i=0;i<reps.size();i++) {
@@ -101,7 +121,7 @@ public class Edit_Exercise extends AppCompatActivity {
         }
         exercisename.requestFocus();
     }
-    //TODO
+    //TODO delete rep
     private void delRep(View addView,Button buttonRemove) {
         ((LinearLayout) addView.getParent()).removeView(addView);
 
@@ -113,6 +133,7 @@ public class Edit_Exercise extends AppCompatActivity {
             btn.setVisibility(View.VISIBLE);
             int id_edittext = repCount + 100;
             EditText editTextRep = (EditText) findViewById(id_edittext);
+            db.deleteRep(reps.get(repCount).getRepId());
             //editTextRep.requestFocus();
         }
     }
@@ -129,13 +150,13 @@ public class Edit_Exercise extends AppCompatActivity {
         db = new DatabaseHandler(getApplicationContext());
         //EditText editTextRep = (EditText) findViewById(R.id.editTextEditExercise);
         //exercisename = (EditText)findViewById(R.id.editTextEditExercise);
-        Exercise exercise = new Exercise(exercisename.getText().toString());
-        int exId = exercises.get(exerciselistId).getExerciseId();
+        Exercise exercise = new Exercise(exercisename.getText().toString(),groupname);
+        int exId = exercises.getExerciseId();
         //set exerciseid
         exercise.setExerciseId(exId);
 
         // update exercise in db
-        int exercise_id = db.updateExercise(exercise);
+        db.updateExercise(exercise);
 
         for(int i=0; i<repidlist.size(); i++) {
             String edittextid = String.valueOf(repidlist.get(i));
@@ -143,11 +164,18 @@ public class Edit_Exercise extends AppCompatActivity {
             edittextreps = ((EditText) findViewById(repid));
             //Toast.makeText(getApplicationContext(), "added edittext "+String.valueOf(repid), Toast.LENGTH_SHORT).show();
             // Inserting reps in db
-            Rep rep = new Rep(exercise_id,Integer.parseInt(edittextreps.getText().toString()));
+            Rep rep = new Rep(exId,Integer.parseInt(edittextreps.getText().toString()));
             int replistid = reps.get(i).getRepId();
-            rep.setRepId(replistid);
-            long rep1_id = db.updateRep(rep);
-            Log.i("database", "added name: " + exercisename.getText().toString() + " exid: " + exercise_id + " and repamount: " + rep.getRepAmount() + " repid: " + replistid);
+            if (replistid != 0){
+                rep.setRepId(replistid);
+                long rep1_id = db.updateRep(rep);
+                Log.i("database", "added name: " + exercisename.getText().toString() + " exid: " + exId + " and repamount: " + rep.getRepAmount() + " repid: " + replistid);
+            }else{
+                //create new rep
+                long rep1_id = db.createRep(rep);
+                Log.i("database", "added name: " + exercisename.getText().toString() + " exid: " + exId + " and repamount: " + rep.getRepAmount() + " repid: " + rep1_id);
+            }
+
             //Toast.makeText(getApplicationContext(), "added "+exercisename.getText().toString()+exercise_id+" and rep "+edittextreps.getText().toString()+ rep1_id, Toast.LENGTH_SHORT).show();
         }
 
@@ -170,6 +198,7 @@ public class Edit_Exercise extends AppCompatActivity {
 
             int edittextrepid = editTextRep.getId();
             repidlist.add(edittextrepid);
+            reps.add((repCount-1),new Rep(exercises.getExerciseId(),0));
             //Toast.makeText(getApplicationContext(), "edittextrepid "+edittextrepid, Toast.LENGTH_SHORT).show();
 
             final Button buttonRemove = (Button) addView.findViewById(R.id.remove);
@@ -215,6 +244,70 @@ public class Edit_Exercise extends AppCompatActivity {
             int id_edittext = repCount + 100;
             EditText editTextRep = (EditText) findViewById(id_edittext);
             editTextRep.requestFocus();
+            reps.remove(repCount);
+        }
+    }
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (buttonView == cbAbs) {
+            if (isChecked) {
+                groupname="Abs";
+
+            } else {
+            }
+        }else
+        if (buttonView == cbArms) {
+            if (isChecked) {
+                groupname="Arms";
+            } else {
+            }
+        }else
+        if (buttonView == cbBack) {
+            if (isChecked) {
+                groupname="Back";
+            } else {
+            }
+        }else
+        if (buttonView == cbChest) {
+            if (isChecked) {
+                groupname="Chest";
+            } else {
+            }
+        }else
+        if (buttonView == cbLeg) {
+            if (isChecked) {
+                groupname="Legs";
+            } else {
+            }
+        }else
+        if (buttonView == cbShoulder) {
+            if (isChecked) {
+                groupname="Shoulders";
+            } else {
+            }
+        }
+    }
+
+    public void setGroupname(String _groupname){
+        switch(_groupname) {
+            case "Abs":
+                cbAbs.setChecked(true);
+                break;
+            case "Arms":
+                cbArms.setChecked(true);
+                break;
+            case "Back":
+                cbBack.setChecked(true);
+                break;
+            case "Chest":
+                cbChest.setChecked(true);
+                break;
+            case "Legs":
+                cbLeg.setChecked(true);
+                break;
+            case "Shoulders":
+                cbShoulder.setChecked(true);
+                break;
         }
     }
 }

@@ -13,19 +13,19 @@ import java.util.List;
  */
 public class Exercise implements Parcelable {
     private int _exerciseid;
-    private String _exercisename;
+    private String _exercisename,_groupname;
     private List<Rep> repList = new ArrayList<Rep>();
 
     //parceable settings
     private Exercise(Parcel in) {
         _exerciseid = in.readInt();
         _exercisename = in.readString();
+        _groupname = in.readString();
 
     }
 
     @Override
     public int describeContents() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -34,6 +34,7 @@ public class Exercise implements Parcelable {
 
         dest.writeInt(_exerciseid);
         dest.writeString(_exercisename);
+        dest.writeString(_groupname);
 
     }
 
@@ -55,13 +56,15 @@ public class Exercise implements Parcelable {
     }
 
 
-    public Exercise(String exercisename){
+    public Exercise(String exercisename,String groupname){
         _exercisename = exercisename;
+        _groupname = groupname;
     }
 
-    public Exercise(int id,String exercisename){
+    public Exercise(int id,String exercisename,String groupname){
         _exerciseid = id;
         _exercisename = exercisename;
+        _groupname = groupname;
     }
 
     // setters
@@ -73,6 +76,10 @@ public class Exercise implements Parcelable {
         _exercisename = exercisename;
     }
 
+    public void setGroupName(String groupname) {
+        _groupname = groupname;
+    }
+
     // getters
     public int getExerciseId() {
         return _exerciseid;
@@ -81,6 +88,9 @@ public class Exercise implements Parcelable {
     public String getExerciseName() {
         return _exercisename;
     }
+
+    public String getGroupName(){ return _groupname; }
+
     public List<Rep> getRepList() { return repList; }
     public void setExerciseReps(List<Rep> repList) {
         this.repList = repList;

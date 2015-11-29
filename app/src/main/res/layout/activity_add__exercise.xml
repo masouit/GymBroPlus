@@ -23,6 +23,65 @@
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewChest"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_chest"
+                android:checked="false"
+                android:layout_weight="1" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewBack"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_back"
+                android:checked="false"
+                android:layout_weight="1"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewShoulder"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_shoulder"
+                android:checked="false"
+                android:layout_weight="1"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewAbs"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_abs"
+                android:checked="false"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewArms"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_arms"
+                android:checked="false"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageViewLegs"
+                android:button="@null"
+                android:background="@drawable/checkbox_imageview_legs"
+                android:checked="false"
+                android:layout_weight="1"/>
+
+        </RadioGroup>
+
         <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="fill_parent"

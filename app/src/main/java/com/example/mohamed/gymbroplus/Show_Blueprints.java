@@ -18,13 +18,9 @@ import java.util.List;
 
 public class Show_Blueprints extends AppCompatActivity {
     DatabaseHandler db;
-    ArrayList<Exercise> exercises = new ArrayList<Exercise>();
-    List<Rep> reps = new ArrayList<Rep>();
-
     ExpandableListBlueprintAdapter listAdapter;
     ExpandableListView expListView;
     List<Blueprint> listDataBlueprint;
-
     ArrayList<Blueprint> blueprints = new ArrayList<Blueprint>();
     List<BlueprintDay> days = new ArrayList<BlueprintDay>();
 
@@ -102,7 +98,6 @@ public class Show_Blueprints extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                // TODO Auto-generated method stub
 //                Intent intent = new Intent(getBaseContext(), Edit_day.class);
 //                intent.putExtra("dayId",childPosition);
 //                startActivity(intent);
@@ -120,8 +115,8 @@ public class Show_Blueprints extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
 
-        expListView.setIndicatorBoundsRelative(width - getDipsFromPixel(60), width
-                - getDipsFromPixel(40));
+        expListView.setIndicatorBoundsRelative(width - getDipsFromPixel(32), width
+                - getDipsFromPixel(4));
     }
 
     // Convert pixel to dip
@@ -147,7 +142,7 @@ public class Show_Blueprints extends AppCompatActivity {
             for (int j = 0; j < days.size(); j++){
                 list.add(days.get(j));
             }
-            blueprints.get(i).setExerciseReps(list);
+            blueprints.get(i).setBlueprintDays(list);
             days.clear();
         }
         listDataBlueprint.addAll(blueprints);
@@ -156,7 +151,12 @@ public class Show_Blueprints extends AppCompatActivity {
 
     public void delBlueprint(Blueprint blueprint,boolean deletedays,Context context){
         db = new DatabaseHandler(context);
-        db.deleteBlueprint(blueprint,deletedays);
+        db.deleteBlueprint(blueprint, deletedays);
+        db.closeDB();
+    }
+    public void editBlueprint(Blueprint blueprint,Context context){
+        db = new DatabaseHandler(context);
+        db.updateBlueprint(blueprint);
         db.closeDB();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mohamed.gymbroplus;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -72,28 +73,6 @@ public class Show_Exercises extends AppCompatActivity {
             }
         });
 
-        // Listview Group expanded listener
-        expListView.setOnGroupExpandListener(new OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        listDataHeader.get(groupPosition) + " Expanded",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Listview Group collasped listener
-        expListView.setOnGroupCollapseListener(new OnGroupCollapseListener() {
-
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        listDataHeader.get(groupPosition) + " Collapsed",
-                        Toast.LENGTH_SHORT).show();
-
-            }
-        });
 
         // Listview on child click listener
         expListView.setOnChildClickListener(new OnChildClickListener() {
@@ -101,7 +80,6 @@ public class Show_Exercises extends AppCompatActivity {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                // TODO Auto-generated method stub
                 Toast.makeText(
                         getApplicationContext(),
                         listDataHeader.get(groupPosition)
@@ -110,34 +88,6 @@ public class Show_Exercises extends AppCompatActivity {
                 return false;
             }
         });
-
-//        ImageView delete = (ImageView) expListView.findViewById(R.id.delete);
-//        delete.setOnClickListener(new ExpandableListView.OnClickListener() {
-//
-//            public void onClick(final View v) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
-//                builder.setMessage("Do you want to remove?");
-//                builder.setCancelable(false);
-//                builder.setPositiveButton("Yes",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-//                                String group = listDataHeader.get(groupPosition);
-//                                listDataHeader.remove(groupPosition);
-//                                listAdapter.notifyDataSetChanged();
-//                                Toast.makeText(getBaseContext(), " Deleted", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                builder.setNegativeButton("No",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                dialog.cancel();
-//                            }
-//                        });
-//                AlertDialog alertDialog = builder.create();
-//                alertDialog.show();
-//            }
-//        });
     }
 
     @Override
@@ -175,11 +125,6 @@ public class Show_Exercises extends AppCompatActivity {
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
             // do something with parent
             //TODO contextmenu parent
-//            Toast.makeText(
-//                    getApplicationContext(),
-//                    listDataHeader.get(groupPosition)
-//                    , Toast.LENGTH_SHORT)
-//                    .show();
             if(menuItem==0){//delete
                 Toast.makeText(
                         getApplicationContext(),
@@ -187,7 +132,7 @@ public class Show_Exercises extends AppCompatActivity {
                         , Toast.LENGTH_SHORT)
                         .show();
             }else if(menuItem==1){//edit
-                editExercise(exercises.get(groupPosition),groupPosition);
+                editExercise(exercises.get(groupPosition));
             }
 
         } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
@@ -197,14 +142,7 @@ public class Show_Exercises extends AppCompatActivity {
 
         return super.onContextItemSelected(item);
     }
-    public void editExercise(Exercise exercise,int exerciseId){
 
-        Intent intent = new Intent(this, Edit_Exercise.class);
-        intent.putExtra("exerciselist", exercises);
-        intent.putExtra("exerciseId",exerciseId);
-        startActivity(intent);
-
-    }
 
     /*
      * Set groupindicator to the right
@@ -215,8 +153,8 @@ public class Show_Exercises extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;
 
-        expListView.setIndicatorBoundsRelative(width - getDipsFromPixel(60), width
-                - getDipsFromPixel(40));
+        expListView.setIndicatorBoundsRelative(width - getDipsFromPixel(32), width
+                - getDipsFromPixel(4));
     }
 
     // Convert pixel to dip
@@ -247,5 +185,18 @@ public class Show_Exercises extends AppCompatActivity {
         }
         listDataHeader.addAll(exercises);
         db.closeDB();
+    }
+
+    //DELETE EXERCISE
+    public void delExercise(Exercise exercise,boolean deletereps,Context context){
+        db = new DatabaseHandler(context);
+        db.deleteExercise(exercise, deletereps);
+        db.closeDB();
+    }
+    //EDIT EXERCISE
+    public void editExercise(Exercise exercise){
+        Intent intent = new Intent(this, Edit_Exercise.class);
+        intent.putExtra("exerciselist", exercise);
+        startActivity(intent);
     }
 }

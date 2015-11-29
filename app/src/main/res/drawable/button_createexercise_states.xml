@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/button_createexercise_pressed"
-        android:state_pressed="true" />
-    <item android:drawable="@drawable/button_createexercise_focus"
-        android:state_focused="true" />
-    <item android:drawable="@drawable/button_createexercise" />
+<item android:state_pressed="true">
+    <inset android:insetBottom="20dp" android:insetLeft="20dp" android:insetRight="20dp" android:insetTop="20dp">
+        <bitmap android:src="@drawable/button_createexercise" />
+    </inset>
+</item>
+
+<item>
+    <inset android:insetBottom="10dp" android:insetLeft="10dp" android:insetRight="10dp" android:insetTop="10dp">
+        <bitmap android:src="@drawable/button_createexercise" />
+    </inset>
+</item>
 </selector>

@@ -1,32 +1,32 @@
 package com.example.mohamed.gymbroplus;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Add_Exercise extends AppCompatActivity {
+public class Add_Exercise extends AppCompatActivity  implements
+        OnCheckedChangeListener {
     private LinearLayout mLayout;
     private int repCount = 0;
     // Database Handler
@@ -38,6 +38,8 @@ public class Add_Exercise extends AppCompatActivity {
 
     List<Exercise> exercises = new ArrayList<Exercise>();
     List<Integer> repidlist = new ArrayList<Integer>();
+    RadioButton cbChest,cbBack,cbShoulder,cbAbs,cbLeg,cbArms;
+    String groupname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,21 @@ public class Add_Exercise extends AppCompatActivity {
         setContentView(R.layout.activity_add__exercise);
         mLayout = (LinearLayout) findViewById(R.id.linearLayout1);
         setTitle("Add exercise");
+
+        cbChest     = (RadioButton) findViewById(R.id.imageViewChest);
+        cbBack      = (RadioButton) findViewById(R.id.imageViewBack);
+        cbShoulder  = (RadioButton) findViewById(R.id.imageViewShoulder);
+        cbAbs       = (RadioButton) findViewById(R.id.imageViewAbs);
+        cbLeg       = (RadioButton) findViewById(R.id.imageViewLegs);
+        cbArms      = (RadioButton) findViewById(R.id.imageViewArms);
+
+        cbChest.setOnCheckedChangeListener(this);
+        cbBack.setOnCheckedChangeListener(this);
+        cbShoulder.setOnCheckedChangeListener(this);
+        cbAbs.setOnCheckedChangeListener(this);
+        cbLeg.setOnCheckedChangeListener(this);
+        cbArms.setOnCheckedChangeListener(this);
+        cbBack.setChecked(true);
 
         exercisename = (AutoCompleteTextView)findViewById(R.id.editTextExercisename);
         autoCompleteExercise();
@@ -77,7 +94,7 @@ public class Add_Exercise extends AppCompatActivity {
             //exercisename = (AutoCompleteTextView)findViewById(R.id.editTextExercisename);
 
             // Creating exercise
-            Exercise exercise = new Exercise(exercisename.getText().toString());
+            Exercise exercise = new Exercise(exercisename.getText().toString(),groupname);
 
             // Inserting exercise in db
             int exercise_id = db.createExercise(exercise);
@@ -170,5 +187,46 @@ public class Add_Exercise extends AppCompatActivity {
         textView.setLayoutParams(lparams);
         textView.setText("Rep" + text);
         return textView;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (buttonView == cbAbs) {
+            if (isChecked) {
+                groupname="Abs";
+
+            } else {
+            }
+        }else
+        if (buttonView == cbArms) {
+            if (isChecked) {
+                groupname="Arms";
+            } else {
+            }
+        }else
+        if (buttonView == cbBack) {
+            if (isChecked) {
+                groupname="Back";
+            } else {
+            }
+        }else
+        if (buttonView == cbChest) {
+            if (isChecked) {
+                groupname="Chest";
+            } else {
+            }
+        }else
+        if (buttonView == cbLeg) {
+            if (isChecked) {
+                groupname="Legs";
+            } else {
+            }
+        }else
+        if (buttonView == cbShoulder) {
+            if (isChecked) {
+                groupname="Shoulders";
+            } else {
+            }
+        }
     }
 }

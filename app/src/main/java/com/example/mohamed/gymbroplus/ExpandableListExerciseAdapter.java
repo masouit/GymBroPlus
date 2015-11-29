@@ -1,11 +1,18 @@
 package com.example.mohamed.gymbroplus;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -78,7 +85,7 @@ public class ExpandableListExerciseAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded,
+    public View getGroupView(final int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
 
         View v = convertView;
@@ -95,7 +102,46 @@ public class ExpandableListExerciseAdapter extends BaseExpandableListAdapter {
         Exercise cat = catList.get(groupPosition);
 
         groupName.setText(cat.getExerciseName());
+        groupName.setTypeface(null, Typeface.BOLD);
+        //DELETE EXERCISE
+        ImageView delete = (ImageView) v.findViewById(R.id.delete);
+        delete.setOnClickListener(new ExpandableListView.OnClickListener() {
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                builder.setMessage("Do you want to remove?");
+                builder.setCancelable(false);
+                builder.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Exercise group = catList.get(groupPosition);
+                                catList.remove(groupPosition);
+                                notifyDataSetChanged();
+                                Show_Exercises se = new Show_Exercises();
+                                se.delExercise(group, true, ctx);
 
+                                Toast.makeText(ctx, " Deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                builder.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }
+        });
+        //EDIT EXERCISE
+        ImageView edit = (ImageView) v.findViewById(R.id.edit);
+        edit.setOnClickListener(new ExpandableListView.OnClickListener() {
+            public void onClick(View v) {
+                Exercise group = catList.get(groupPosition);
+                Intent intent = new Intent(ctx, Edit_Exercise.class);
+                intent.putExtra("exerciselist", group);
+                ctx.startActivity(intent);
+            }
+        });
         return v;
 
     }
